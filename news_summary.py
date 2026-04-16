@@ -18,7 +18,7 @@ app = FastAPI()
 def fetch_and_summarize():
     print(f"[{datetime.now()}] ニュース取得を開始します...")
     
-    # あなたが成功させた最新のURL
+    # URL指定
     url = "https://news.google.com/home?hl=ja&gl=JP&ceid=JP%3Aja"
     headers = {"User-Agent": "Mozilla/5.0"}
     
@@ -35,7 +35,7 @@ def fetch_and_summarize():
             print("ニュースが取得できませんでした。")
             return
 
-        # AIで要約（ここでお金がかかるので、回数を絞るのが大事！）
+        # AIで要約
         ai_response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -57,7 +57,6 @@ def fetch_and_summarize():
         print(f"エラーが発生しました: {e}")
 
 # --- スケジュール設定（ここが重要！） ---
-# テスト用に「1分おき」にしていますが、本番は特定の時間を指定します
 schedule.every().day.at("08:00").do(fetch_and_summarize) # 朝8時
 schedule.every().day.at("12:00").do(fetch_and_summarize) # 昼12時
 schedule.every().day.at("19:00").do(fetch_and_summarize) # 夜19時
@@ -68,7 +67,7 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(1)
 
-# プログラム起動時に、スケジュール機能を別スレッド（裏方）で開始
+# プログラム起動時に、スケジュール機能を別スレッドで開始
 threading.Thread(target=run_scheduler, daemon=True).start()
 
 @app.get("/status")
